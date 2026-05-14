@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LinkShieldAI — Secure Your Discord Server</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --c: #00e5ff;
+    --g: #00ff88;
+    --r: #ff3860;
+    --bg: #080c14;
+    --bg2: #0d1424;
+    --tm: #6b8a9a;
+    --bd: rgba(0,229,255,0.12);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: #e8f4f8; overflow-x: hidden; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  .gtext {
+    background: linear-gradient(120deg, #00e5ff 0%, #00ff88 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Orbs */
+  .orb { position: absolute; border-radius: 9999px; filter: blur(80px); pointer-events: none; z-index: 0; }
+  .orb1 { width: 480px; height: 480px; background: rgba(0,229,255,0.06); top: -80px; right: -80px; animation: drift1 12s ease-in-out infinite alternate; }
+  .orb2 { width: 360px; height: 360px; background: rgba(0,255,136,0.05); bottom: 0; left: -60px; animation: drift2 15s ease-in-out infinite alternate; }
+  @keyframes drift1 { 0% { transform: translate(0,0); } 100% { transform: translate(30px,40px); } }
+  @keyframes drift2 { 0% { transform: translate(0,0); } 100% { transform: translate(-20px,30px); } }
+
+  /* Shield */
+  .shield-glow { filter: drop-shadow(0 0 14px rgba(0,229,255,0.65)); animation: sglow 3s ease-in-out infinite; }
+  @keyframes sglow { 0%,100% { filter: drop-shadow(0 0 14px rgba(0,229,255,0.6)); } 50% { filter: drop-shadow(0 0 30px rgba(0,229,255,1)) drop-shadow(0 0 60px rgba(0,229,255,0.35)); } }
+
+  .float { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+  /* Scan line */
+  .scan-wrap { position: relative; overflow: hidden; }
+  .scan-wrap::after { content: ''; position: absolute; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #00e5ff 50%, transparent); animation: scan 3s linear infinite; opacity: 0.5; }
+  @keyframes scan { 0% { top: -2px; } 100% { top: 100%; } }
+
+  /* Cards */
+  .card { background: linear-gradient(135deg, rgba(13,20,36,0.95), rgba(8,12,20,0.98)); border: 1px solid var(--bd); border-radius: 16px; transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), border-color 0.35s, box-shadow 0.35s; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,229,255,0.05), transparent); opacity: 0; transition: opacity 0.35s; }
+  .card:hover::before { opacity: 1; }
+  .card:hover { transform: translateY(-6px); border-color: rgba(0,229,255,0.4); box-shadow: 0 20px 50px rgba(0,229,255,0.1), 0 0 0 1px rgba(0,229,255,0.12); }
+
+  /* Buttons */
+  .btn-p { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(120deg, #00c4d8, #00e5ff); color: #060a10 !important; font-weight: 700; padding: 13px 26px; border-radius: 10px; font-size: 15px; transition: transform 0.25s, box-shadow 0.25s; position: relative; overflow: hidden; text-decoration: none; }
+  .btn-p::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, #00e5ff, #00ff88); opacity: 0; transition: opacity 0.25s; }
+  .btn-p span { position: relative; z-index: 1; }
+  .btn-p:hover::after { opacity: 1; }
+  .btn-p:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,229,255,0.4); }
+
+  .btn-o { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(0,229,255,0.3); color: #00e5ff; padding: 13px 26px; border-radius: 10px; font-size: 15px; font-weight: 600; transition: all 0.25s; text-decoration: none; }
+  .btn-o:hover { background: rgba(0,229,255,0.07); border-color: rgba(0,229,255,0.65); box-shadow: 0 0 20px rgba(0,229,255,0.15); transform: translateY(-2px); }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.22); border-radius: 100px; padding: 5px 14px; font-size: 11px; font-weight: 700; color: #00e5ff; letter-spacing: 0.07em; text-transform: uppercase; font-family: ui-monospace, monospace; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.on { opacity: 1; transform: translateY(0); }
+
+  /* Terminal */
+  .term { background: #07090f; border: 1px solid rgba(0,229,255,0.14); border-radius: 12px; overflow: hidden; }
+  .term-bar { background: rgba(0,229,255,0.04); padding: 10px 14px; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid rgba(0,229,255,0.1); }
+  .td { width: 11px; height: 11px; border-radius: 50%; }
+
+  /* Stat */
+  .statcard { background: rgba(13,20,36,0.65); border: 1px solid var(--bd); border-radius: 12px; padding: 22px; text-align: center; }
+
+  /* Chips */
+  .chip { display: inline-block; border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 600; font-family: ui-monospace, monospace; }
+  .chip-c { background: rgba(0,229,255,0.08); color: #00e5ff; border: 1px solid rgba(0,229,255,0.2); }
+  .chip-r { background: rgba(255,56,96,0.08); color: #ff3860; border: 1px solid rgba(255,56,96,0.2); }
+  .chip-g { background: rgba(0,255,136,0.08); color: #00ff88; border: 1px solid rgba(0,255,136,0.2); }
+  .chip-p { background: rgba(139,92,246,0.09); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+
+  /* Step */
+  .stepnum { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; margin: 0 auto 20px; }
+
+  /* Testimonial */
+  .tcard { background: rgba(13,20,36,0.7); border: 1px solid rgba(0,229,255,0.1); border-radius: 14px; padding: 22px; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+  .tcard:hover { transform: translateY(-5px); border-color: rgba(0,229,255,0.28); box-shadow: 0 12px 36px rgba(0,229,255,0.07); }
+
+  /* Nav */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(8,12,20,0.78); border-bottom: 1px solid rgba(0,229,255,0.07); transition: transform 0.3s ease, background 0.3s ease; }
+
+  /* Ping */
+  @keyframes ping { 75%,100% { transform: scale(2.4); opacity: 0; } }
+  .ping-ring { position: absolute; inset: 0; border-radius: 9999px; background: #00ff88; animation: ping 2s cubic-bezier(0,0,0.2,1) infinite; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.3); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div style="max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+      <svg width="26" height="30" viewBox="0 0 32 36" fill="none" class="shield-glow">
+        <path d="M16 2L2 7.5V18C2 25.8 8.4 32.6 16 34.2C23.6 32.6 30 25.8 30 18V7.5L16 2Z" stroke="url(#n1)" stroke-width="1.8" fill="rgba(0,229,255,0.06)"/>
+        <path d="M10 17.5L14 21.5L22 13.5" stroke="#00e5ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="n1" x1="0" y1="0" x2="32" y2="36"><stop stop-color="#00e5ff"/><stop offset="1" stop-color="#00ff88"/></linearGradient></defs>
+      </svg>
+      <span class="gtext" style="font-weight:800;font-size:17px;">LinkShieldAI</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:24px;">
+      <a href="#features" style="color:var(--tm);font-size:14px;font-weight:600;text-decoration:none;font-family:ui-monospace,monospace;transition:color 0.2s;" onmouseover="this.style.color='#00e5ff'" onmouseout="this.style.color='var(--tm)'">Features</a>
+      <a href="#how" style="color:var(--tm);font-size:14px;font-weight:600;text-decoration:none;font-family:ui-monospace,monospace;transition:color 0.2s;" onmouseover="this.style.color='#00e5ff'" onmouseout="this.style.color='var(--tm)'">How It Works</a>
+      <a href="#reviews" style="color:var(--tm);font-size:14px;font-weight:600;text-decoration:none;font-family:ui-monospace,monospace;transition:color 0.2s;" onmouseover="this.style.color='#00e5ff'" onmouseout="this.style.color='var(--tm)'">Reviews</a>
+    </div>
+    <a href="https://discord.com/oauth2/authorize?client_id=839192943931162643&permissions=1099511965760&scope=bot" target="_blank" class="btn-p" style="font-size:13px;padding:10px 18px;flex-shrink:0;"><span>Add to Discord →</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="grid-bg" style="min-height:100vh;display:flex;align-items:center;padding:120px 24px 80px;position:relative;overflow:hidden;background:var(--bg);">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div style="max-width:860px;margin:0 auto;text-align:center;position:relative;z-index:1;">
+
+    <div style="margin-bottom:24px;">
+      <span class="badge">
+        <span style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:8px;height:8px;flex-shrink:0;">
+          <span class="ping-ring"></span>
+          <span style="position:relative;width:8px;height:8px;border-radius:9999px;background:#00ff88;display:inline-block;"></span>
+        </span>
+        Active Protection · Powered by AI
+      </span>
+    </div>
+
+    <div class="float" id="hs" style="margin-bottom:28px;opacity:0;transform:scale(0.5);">
+      <div class="scan-wrap" style="display:inline-block;padding:3px;border-radius:9999px;background:linear-gradient(135deg,rgba(0,229,255,0.35),rgba(0,255,136,0.15));">
+        <div style="width:108px;height:108px;background:rgba(8,12,20,0.92);border-radius:9999px;display:flex;align-items:center;justify-content:center;margin:0 auto;">
+          <svg width="54" height="62" viewBox="0 0 32 36" fill="none" class="shield-glow">
+            <path d="M16 2L2 7.5V18C2 25.8 8.4 32.6 16 34.2C23.6 32.6 30 25.8 30 18V7.5L16 2Z" stroke="url(#sg)" stroke-width="1.8" fill="rgba(0,229,255,0.08)"/>
+            <path d="M9 17L13.5 22L23 12" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs><linearGradient id="sg" x1="0" y1="0" x2="32" y2="36"><stop stop-color="#00e5ff"/><stop offset="1" stop-color="#00ff88"/></linearGradient></defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <h1 id="hh" style="font-size:clamp(40px,7vw,74px);font-weight:900;line-height:1.05;letter-spacing:-0.02em;margin-bottom:20px;opacity:0;transform:translateY(24px);">
+      Secure Your<br><span class="gtext">Discord Server</span>
+    </h1>
+
+    <p id="hp" style="font-size:18px;color:var(--tm);max-width:540px;margin:0 auto 34px;line-height:1.7;opacity:0;transform:translateY(20px);">
+      LinkShieldAI scans every link in real-time, blocks phishing attacks, and keeps your community safe — automatically, 24/7.
+    </p>
+
+    <div id="hb" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:52px;opacity:0;transform:translateY(16px);">
+      <a href="https://discord.com/oauth2/authorize?client_id=839192943931162643&permissions=1099511965760&scope=bot" target="_blank" class="btn-p"><span>🛡 Invite the Bot — It's Free</span></a>
+      <a href="https://discord.gg/CnSpXUrHfQ" target="_blank" class="btn-o">Join Support Server</a>
+    </div>
+
+    <div class="term" id="ht" style="max-width:600px;margin:0 auto;text-align:left;opacity:0;transform:translateY(18px);">
+      <div class="term-bar">
+        <div class="td" style="background:#ff5f57;"></div>
+        <div class="td" style="background:#ffbd2e;"></div>
+        <div class="td" style="background:#28ca41;"></div>
+        <span style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;margin-left:8px;">linkshield — threat-scanner</span>
+      </div>
+      <div style="padding:18px 20px;font-family:ui-monospace,monospace;font-size:13px;line-height:2.1;">
+        <div style="color:var(--tm);">$ <span style="color:#00e5ff;">scan</span> --url https://suspicious-discord-login.xyz</div>
+        <div style="color:var(--tm);">→ Checking 50M+ threat database...</div>
+        <div style="color:var(--tm);">→ Analyzing redirect chains...</div>
+        <div style="color:var(--tm);">→ Verifying domain reputation...</div>
+        <div style="color:#00ff88;font-weight:600;">⚠ THREAT DETECTED — Phishing (98.7% confidence)</div>
+        <div style="color:#ff3860;font-weight:600;">✗ Message deleted · User warned · Admin alerted</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS -->
+<section style="padding:60px 24px;background:linear-gradient(180deg,var(--bg),var(--bg2));">
+  <div style="max-width:880px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;">
+    <div class="statcard reveal"><div class="gtext" style="font-size:34px;font-weight:900;margin-bottom:4px;">50M+</div><div style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;">Links in Database</div></div>
+    <div class="statcard reveal" style="transition-delay:.1s"><div class="gtext" style="font-size:34px;font-weight:900;margin-bottom:4px;">24/7</div><div style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;">Active Monitoring</div></div>
+    <div class="statcard reveal" style="transition-delay:.2s"><div class="gtext" style="font-size:34px;font-weight:900;margin-bottom:4px;">&lt;100ms</div><div style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;">Scan Speed</div></div>
+    <div class="statcard reveal" style="transition-delay:.3s"><div class="gtext" style="font-size:34px;font-weight:900;margin-bottom:4px;">99.9%</div><div style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;">Detection Rate</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="padding:96px 24px;background:var(--bg2);position:relative;overflow:hidden;">
+  <div style="position:absolute;width:400px;height:400px;border-radius:9999px;background:rgba(0,229,255,0.04);filter:blur(80px);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;"></div>
+  <div style="max-width:1040px;margin:0 auto;position:relative;z-index:1;">
+
+    <div style="text-align:center;margin-bottom:56px;" class="reveal">
+      <span class="badge">Features</span>
+      <h2 style="font-size:clamp(30px,5vw,50px);font-weight:900;margin-top:16px;margin-bottom:12px;letter-spacing:-0.02em;">
+        Everything You Need to <span class="gtext">Stay Safe</span>
+      </h2>
+      <p style="color:var(--tm);max-width:480px;margin:0 auto;font-size:16px;line-height:1.6;">Built for Discord communities of all sizes.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:20px;">
+
+      <div class="card reveal" style="padding:28px;">
+        <div style="display:flex;gap:18px;align-items:flex-start;">
+          <div style="width:52px;height:52px;border-radius:13px;background:rgba(0,229,255,0.09);border:1px solid rgba(0,229,255,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <h3 style="font-size:19px;font-weight:800;margin-bottom:10px;">Real-Time Link Scanning</h3>
+            <p style="color:var(--tm);font-size:14px;line-height:1.7;">Every URL is instantly analyzed before anyone can click it. Our engine checks malware databases, analyzes redirect chains, and expands short links — all in under 100ms.</p>
+          </div>
+        </div>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:7px;">
+          <span class="chip chip-c">Malware URLs</span><span class="chip chip-c">Redirect Chains</span><span class="chip chip-c">Short Link Expand</span>
+        </div>
+      </div>
+
+      <div class="card reveal" style="padding:28px;transition-delay:.1s">
+        <div style="display:flex;gap:18px;align-items:flex-start;">
+          <div style="width:52px;height:52px;border-radius:13px;background:rgba(255,56,96,0.09);border:1px solid rgba(255,56,96,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff3860" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <div>
+            <h3 style="font-size:19px;font-weight:800;margin-bottom:10px;">Phishing Detection</h3>
+            <p style="color:var(--tm);font-size:14px;line-height:1.7;">AI models trained on millions of phishing campaigns detect brand impersonation, fake login pages, and deceptive domains — even freshly registered ones that evade traditional blocklists.</p>
+          </div>
+        </div>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:7px;">
+          <span class="chip chip-r">Brand Spoofing</span><span class="chip chip-r">Credential Harvest</span><span class="chip chip-r">Typosquatting</span>
+        </div>
+      </div>
+
+      <div class="card reveal" style="padding:28px;transition-delay:.15s">
+        <div style="display:flex;gap:18px;align-items:flex-start;">
+          <div style="width:52px;height:52px;border-radius:13px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="8" x2="13" y2="8"/><line x1="8" y1="16" x2="11" y2="16"/></svg>
+          </div>
+          <div>
+            <h3 style="font-size:19px;font-weight:800;margin-bottom:10px;">Full Customization</h3>
+            <p style="color:var(--tm);font-size:14px;line-height:1.7;">Configure per-channel rules, allowlists, blocklists, and automated responses. Set different protection levels per role so admins and trusted members are never wrongly flagged.</p>
+          </div>
+        </div>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:7px;">
+          <span class="chip chip-g">Custom Rules</span><span class="chip chip-g">Allow/Blocklists</span><span class="chip chip-g">Role Exceptions</span>
+        </div>
+      </div>
+
+      <div class="card reveal" style="padding:28px;transition-delay:.2s">
+        <div style="display:flex;gap:18px;align-items:flex-start;">
+          <div style="width:52px;height:52px;border-radius:13px;background:rgba(139,92,246,0.09);border:1px solid rgba(139,92,246,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div>
+            <h3 style="font-size:19px;font-weight:800;margin-bottom:10px;">24/7 Support</h3>
+            <p style="color:var(--tm);font-size:14px;line-height:1.7;">An active developer who listens. Our support server is always available and your feedback goes directly into the roadmap. Feature requests actually get built — fast.</p>
+          </div>
+        </div>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:7px;">
+          <span class="chip chip-p">Discord Support</span><span class="chip chip-p">Quick Responses</span><span class="chip chip-p">Feature Requests</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="grid-bg" style="padding:96px 24px;background:var(--bg);">
+  <div style="max-width:880px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:56px;" class="reveal">
+      <span class="badge">Process</span>
+      <h2 style="font-size:clamp(30px,5vw,50px);font-weight:900;margin-top:16px;letter-spacing:-0.02em;">
+        Up &amp; Running in <span class="gtext">60 Seconds</span>
+      </h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;text-align:center;">
+      <div class="reveal">
+        <div class="stepnum" style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;">1</div>
+        <h3 style="font-size:18px;font-weight:800;margin-bottom:10px;">Invite the Bot</h3>
+        <p style="color:var(--tm);font-size:14px;line-height:1.7;">Click "Add to Discord" and authorize LinkShieldAI with the recommended permissions. Takes under a minute.</p>
+      </div>
+      <div class="reveal" style="transition-delay:.15s">
+        <div class="stepnum" style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;">2</div>
+        <h3 style="font-size:18px;font-weight:800;margin-bottom:10px;">Configure Settings</h3>
+        <p style="color:var(--tm);font-size:14px;line-height:1.7;">Set your protection level, define admin alert channels, configure allow/blocklists and per-role exceptions.</p>
+      </div>
+      <div class="reveal" style="transition-delay:.3s">
+        <div class="stepnum" style="position:relative;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);color:#00ff88;">
+          3
+          <span style="position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:9999px;background:#00ff88;animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;"></span>
+        </div>
+        <h3 style="font-size:18px;font-weight:800;margin-bottom:10px;">Stay Protected</h3>
+        <p style="color:var(--tm);font-size:14px;line-height:1.7;">LinkShieldAI silently monitors every message. Threats are blocked instantly. Your community is safe.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="reviews" style="padding:96px 24px;background:var(--bg2);">
+  <div style="max-width:880px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:56px;" class="reveal">
+      <span class="badge">Reviews</span>
+      <h2 style="font-size:clamp(30px,5vw,50px);font-weight:900;margin-top:16px;letter-spacing:-0.02em;">
+        Trusted by <span class="gtext">Real Communities</span>
+      </h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px;">
+
+      <div class="tcard reveal">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:40px;height:40px;border-radius:9999px;background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.22);display:flex;align-items:center;justify-content:center;font-weight:800;color:#00e5ff;font-size:14px;">B</div>
+          <div><div style="font-weight:700;font-size:14px;">bm24</div><div style="color:var(--tm);font-size:11px;font-family:ui-monospace,monospace;">Community Owner</div></div>
+          <div style="margin-left:auto;color:#fbbf24;font-size:13px;">★★★★★</div>
+        </div>
+        <p style="color:var(--tm);font-size:14px;line-height:1.75;">"I love the bot, I recommend it! It caught threats we didn't even know were lurking. Essential for any server."</p>
+      </div>
+
+      <div class="tcard reveal" style="transition-delay:.1s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:40px;height:40px;border-radius:9999px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);display:flex;align-items:center;justify-content:center;font-weight:800;color:#00ff88;font-size:14px;">B</div>
+          <div><div style="font-weight:700;font-size:14px;">bik_</div><div style="color:var(--tm);font-size:11px;font-family:ui-monospace,monospace;">Server Moderator</div></div>
+          <div style="margin-left:auto;color:#fbbf24;font-size:13px;">★★★★★</div>
+        </div>
+        <p style="color:var(--tm);font-size:14px;line-height:1.75;">"Great bot! Set it up in minutes and it has been running perfectly ever since. Couldn't ask for more."</p>
+      </div>
+
+      <div class="tcard reveal" style="transition-delay:.15s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:40px;height:40px;border-radius:9999px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);display:flex;align-items:center;justify-content:center;font-weight:800;color:#a78bfa;font-size:14px;">M</div>
+          <div><div style="font-weight:700;font-size:14px;">MrHat</div><div style="color:var(--tm);font-size:11px;font-family:ui-monospace,monospace;">Gaming Admin</div></div>
+          <div style="margin-left:auto;color:#fbbf24;font-size:13px;">★★★★★</div>
+        </div>
+        <p style="color:var(--tm);font-size:14px;line-height:1.75;">"This bot is amazing. If you want to keep your server safe, I strongly advise you to use it. No exceptions."</p>
+      </div>
+
+      <div class="tcard reveal" style="transition-delay:.2s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:40px;height:40px;border-radius:9999px;background:rgba(255,56,96,0.1);border:1px solid rgba(255,56,96,0.2);display:flex;align-items:center;justify-content:center;font-weight:800;color:#ff3860;font-size:14px;">S</div>
+          <div><div style="font-weight:700;font-size:14px;">saxtus</div><div style="color:var(--tm);font-size:11px;font-family:ui-monospace,monospace;">Security Moderator</div></div>
+          <div style="margin-left:auto;color:#fbbf24;font-size:13px;">★★★★★</div>
+        </div>
+        <p style="color:var(--tm);font-size:14px;line-height:1.75;">"I tested the bot for days before recommending it. The developer is active and listens — features I suggested actually got built. This is me recommending it."</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:100px 24px;background:var(--bg);position:relative;overflow:hidden;">
+  <div style="position:absolute;width:500px;height:500px;border-radius:9999px;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;"></div>
+  <div style="max-width:660px;margin:0 auto;text-align:center;position:relative;z-index:1;" class="reveal">
+    <span class="badge" style="margin-bottom:20px;">Free Forever</span>
+    <h2 style="font-size:clamp(34px,6vw,62px);font-weight:900;margin-top:20px;margin-bottom:16px;line-height:1.05;letter-spacing:-0.02em;">
+      Stop Threats<br><span class="gtext">Before They Strike</span>
+    </h2>
+    <p style="color:var(--tm);font-size:17px;line-height:1.7;margin-bottom:34px;max-width:460px;margin-left:auto;margin-right:auto;">
+      Add LinkShieldAI to your Discord in 60 seconds. No setup fees. No coding required. Just protection.
+    </p>
+    <a href="https://discord.com/oauth2/authorize?client_id=839192943931162643&permissions=1099511965760&scope=bot" target="_blank" class="btn-p" style="font-size:16px;padding:15px 32px;"><span>🛡 Add to Discord — It's Free</span></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="padding:36px 24px;background:var(--bg);border-top:1px solid var(--bd);">
+  <div style="max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <svg width="18" height="21" viewBox="0 0 32 36" fill="none">
+        <path d="M16 2L2 7.5V18C2 25.8 8.4 32.6 16 34.2C23.6 32.6 30 25.8 30 18V7.5L16 2Z" stroke="url(#fg)" stroke-width="1.8" fill="none"/>
+        <path d="M10 17.5L14 21.5L22 13.5" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="fg" x1="0" y1="0" x2="32" y2="36"><stop stop-color="#00e5ff"/><stop offset="1" stop-color="#00ff88"/></linearGradient></defs>
+      </svg>
+      <span class="gtext" style="font-weight:800;font-size:15px;">LinkShieldAI</span>
+    </div>
+    <p style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;">© 2024 LinkShieldAI. All rights reserved.</p>
+    <div style="display:flex;gap:20px;">
+      <a href="#" style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;text-decoration:none;" onmouseover="this.style.color='#e8f4f8'" onmouseout="this.style.color='var(--tm)'">Privacy Policy</a>
+      <a href="#" style="color:var(--tm);font-size:12px;font-family:ui-monospace,monospace;text-decoration:none;" onmouseover="this.style.color='#e8f4f8'" onmouseout="this.style.color='var(--tm)'">Terms of Service</a>
+      <a href="https://discord.gg/CnSpXUrHfQ" target="_blank" style="color:#00e5ff;font-size:12px;font-family:ui-monospace,monospace;text-decoration:none;">Discord ↗</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Nav
+  let lastY = 0;
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    nav.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+    nav.style.background = y > 20 ? 'rgba(8,12,20,0.97)' : 'rgba(8,12,20,0.78)';
+    lastY = y;
+  }, { passive: true });
+
+  // Hero entrance
+  function animIn(id, delay, fromStyle, toStyle) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    Object.assign(el.style, fromStyle);
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.75s cubic-bezier(0.23,1,0.32,1), transform 0.75s cubic-bezier(0.23,1,0.32,1)';
+      Object.assign(el.style, toStyle);
+    }, delay);
+  }
+  animIn('hs', 120,  { opacity:'0', transform:'scale(0.5)' },       { opacity:'1', transform:'scale(1)' });
+  animIn('hh', 320,  { opacity:'0', transform:'translateY(24px)' },  { opacity:'1', transform:'translateY(0)' });
+  animIn('hp', 480,  { opacity:'0', transform:'translateY(20px)' },  { opacity:'1', transform:'translateY(0)' });
+  animIn('hb', 580,  { opacity:'0', transform:'translateY(16px)' },  { opacity:'1', transform:'translateY(0)' });
+  animIn('ht', 720,  { opacity:'0', transform:'translateY(18px)' },  { opacity:'1', transform:'translateY(0)' });
+</script>
+</body>
+</html>
