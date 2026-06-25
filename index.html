@@ -10,9 +10,11 @@
   <link rel="apple-touch-icon" href="lsa.png">
   <style>
     :root {
-      color-scheme: light;
+      color-scheme: light dark;
       --bg: #ffffff;
       --soft-bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface-rgb: 255, 255, 255;
       --text: #17202a;
       --muted: #5f6f7a;
       --line: #dfe5ea;
@@ -22,7 +24,37 @@
       --good: #1f7a4d;
       --warn: #a15c00;
       --bad: #a33a35;
+      --hero-bg: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+      --tag-bg: #eaf1ff;
+      --danger-bg: #fae9e8;
+      --warning-bg: #fff3dd;
+      --good-bg: #e8f5ee;
+      --body-copy: #33424d;
       --max: 1120px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101418;
+        --soft-bg: #161d24;
+        --surface: #151b22;
+        --surface-rgb: 21, 27, 34;
+        --text: #edf2f7;
+        --muted: #a8b3bd;
+        --line: #2a3440;
+        --line-dark: #3a4654;
+        --primary: #7fb3ff;
+        --primary-dark: #a7caff;
+        --good: #7fd7a5;
+        --warn: #f3bd65;
+        --bad: #f18c87;
+        --hero-bg: linear-gradient(180deg, #101418 0%, #141a21 100%);
+        --tag-bg: #1b2d48;
+        --danger-bg: #3a2224;
+        --warning-bg: #342819;
+        --good-bg: #1c3127;
+        --body-copy: #d4dbe3;
+      }
     }
 
     * { box-sizing: border-box; }
@@ -61,7 +93,7 @@
       top: 0;
       z-index: 10;
       border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, .94);
+      background: rgba(var(--surface-rgb), .94);
       backdrop-filter: blur(12px);
     }
     .nav {
@@ -113,7 +145,7 @@
     }
     .button:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
     .button.secondary {
-      background: #fff;
+      background: var(--surface);
       color: var(--text);
       border-color: var(--line-dark);
     }
@@ -130,7 +162,7 @@
     .hero {
       padding: 92px 0 76px;
       border-bottom: 1px solid var(--line);
-      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+      background: var(--hero-bg);
     }
     .hero-grid {
       display: grid;
@@ -190,7 +222,7 @@
     .check-card {
       border: 1px solid var(--line-dark);
       border-radius: 8px;
-      background: #fff;
+      background: var(--surface);
       overflow: hidden;
     }
     .check-card header {
@@ -226,7 +258,7 @@
       margin-right: 8px;
       padding: 3px 7px;
       border-radius: 5px;
-      background: #fae9e8;
+      background: var(--danger-bg);
       color: var(--bad);
       font-size: 12px;
       line-height: 1.3;
@@ -239,9 +271,9 @@
       font-size: 12px;
       font-weight: 850;
     }
-    .badge.bad { background: #fae9e8; color: var(--bad); }
-    .badge.warn { background: #fff3dd; color: var(--warn); }
-    .badge.good { background: #e8f5ee; color: var(--good); }
+    .badge.bad { background: var(--danger-bg); color: var(--bad); }
+    .badge.warn { background: var(--warning-bg); color: var(--warn); }
+    .badge.good { background: var(--good-bg); color: var(--good); }
 
     .section {
       padding: 82px 0;
@@ -268,7 +300,7 @@
     .price-card {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fff;
+      background: var(--surface);
     }
     .proof { padding: 22px; }
     .proof strong { display: block; margin-bottom: 6px; font-size: 18px; }
@@ -323,7 +355,7 @@
       margin-bottom: 12px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: #eaf1ff;
+      background: var(--tag-bg);
       color: var(--primary);
       font-size: 12px;
       font-weight: 850;
@@ -358,7 +390,7 @@
     .trust-list {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fff;
+      background: var(--surface);
       overflow: hidden;
     }
     .trust-row {
@@ -374,7 +406,7 @@
       padding: 38px;
       border: 1px solid var(--line-dark);
       border-radius: 8px;
-      background: #fff;
+      background: var(--surface);
     }
     .pilot-grid {
       display: grid;
@@ -398,7 +430,7 @@
       padding: 10px 13px;
       border: 1px solid var(--line);
       border-radius: 6px;
-      background: #fff;
+      background: var(--surface);
       color: var(--muted);
       text-decoration: none;
       font-size: 14px;
@@ -411,7 +443,7 @@
 
     footer {
       padding: 46px 0;
-      background: #fff;
+      background: var(--surface);
     }
     .footer-grid {
       display: grid;
