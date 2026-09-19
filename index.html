@@ -3,757 +3,743 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="LinkShieldAI checks URLs for phishing, scams, malware, redirects, and unsafe content before people click.">
-  <meta name="theme-color" content="#ffffff">
-  <title>LinkShieldAI | Check risky links before people click</title>
+  <script>(function(){try{var t=localStorage.getItem('lsa-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <title>LinkShieldAI | Link protection for Discord and developers</title>
+  <meta name="description" content="LinkShieldAI finds phishing, scam, malware and NSFW links. Protect your Discord server with the bot, scan URLs from your own app with the API and SDKs, or browse with the Chrome extension.">
+  <meta property="og:title" content="LinkShieldAI">
+  <meta property="og:description" content="Stop malicious links before anyone clicks them. Discord bot, scanning API, SDKs and Chrome extension.">
+  <meta property="og:image" content="https://linkshieldai.com/lsa.png">
+  <meta property="og:url" content="https://linkshieldai.com/">
+  <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101418" media="(prefers-color-scheme: dark)">
   <link rel="icon" type="image/png" href="lsa.png">
   <link rel="apple-touch-icon" href="lsa.png">
   <style>
+    /* Same tokens as the developer dashboard (API/dashboard/style.css). */
     :root {
-      color-scheme: light dark;
-      --bg: #ffffff;
-      --soft-bg: #f6f8fa;
+      color-scheme: light;
+      --primary: #174ea6;
+      --primary-dark: #123c80;
       --surface: #ffffff;
-      --surface-rgb: 255, 255, 255;
+      --soft-bg: #f6f8fa;
       --text: #17202a;
+      --body-copy: #33424d;
       --muted: #5f6f7a;
       --line: #dfe5ea;
       --line-dark: #c7d0d8;
-      --primary: #174ea6;
-      --primary-dark: #123c80;
       --good: #1f7a4d;
       --warn: #a15c00;
       --bad: #a33a35;
-      --hero-bg: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
       --tag-bg: #eaf1ff;
-      --danger-bg: #fae9e8;
-      --warning-bg: #fff3dd;
       --good-bg: #e8f5ee;
-      --body-copy: #33424d;
-      --max: 1120px;
+      --warning-bg: #fff3dd;
+      --danger-bg: #fae9e8;
+      --bg: var(--soft-bg);
+      --panel: var(--surface);
+      --panel-2: #eef2f7;
+      --sidebar-bg: var(--surface);
+      --code-bg: #eef2f6;
+      --code-text: #0f3d78;
+      --btn-text: #ffffff;
+      --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .08);
+      --radius-card: 8px;
+      --radius-control: 6px;
+      --mono: "Cascadia Mono", ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
     }
-
     @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #101418;
-        --soft-bg: #161d24;
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --primary: #7fb3ff;
+        --primary-dark: #a7caff;
         --surface: #151b22;
-        --surface-rgb: 21, 27, 34;
+        --soft-bg: #161d24;
         --text: #edf2f7;
+        --body-copy: #d4dbe3;
         --muted: #a8b3bd;
         --line: #2a3440;
         --line-dark: #3a4654;
-        --primary: #7fb3ff;
-        --primary-dark: #a7caff;
         --good: #7fd7a5;
         --warn: #f3bd65;
         --bad: #f18c87;
-        --hero-bg: linear-gradient(180deg, #101418 0%, #141a21 100%);
         --tag-bg: #1b2d48;
-        --danger-bg: #3a2224;
-        --warning-bg: #342819;
         --good-bg: #1c3127;
-        --body-copy: #d4dbe3;
+        --warning-bg: #342819;
+        --danger-bg: #3a2224;
+        --bg: #101418;
+        --panel-2: #1b2531;
+        --sidebar-bg: #12181f;
+        --code-bg: #0f151c;
+        --code-text: #a7d8ff;
+        --btn-text: #0a1424;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .5);
       }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --primary: #7fb3ff;
+      --primary-dark: #a7caff;
+      --surface: #151b22;
+      --soft-bg: #161d24;
+      --text: #edf2f7;
+      --body-copy: #d4dbe3;
+      --muted: #a8b3bd;
+      --line: #2a3440;
+      --line-dark: #3a4654;
+      --good: #7fd7a5;
+      --warn: #f3bd65;
+      --bad: #f18c87;
+      --tag-bg: #1b2d48;
+      --good-bg: #1c3127;
+      --warning-bg: #342819;
+      --danger-bg: #3a2224;
+      --bg: #101418;
+      --panel-2: #1b2531;
+      --sidebar-bg: #12181f;
+      --code-bg: #0f151c;
+      --code-text: #a7d8ff;
+      --btn-text: #0a1424;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .5);
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
     body {
       margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
       background: var(--bg);
       color: var(--text);
-      font: 16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     }
-    a { color: inherit; }
-    img { max-width: 100%; }
-    :focus-visible { outline: 3px solid rgba(23, 78, 166, .35); outline-offset: 3px; }
-
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, p { margin: 0; text-wrap: pretty; }
+    code, pre { font-family: var(--mono); }
+    code { color: var(--code-text); }
+    :focus-visible { outline: 2px solid color-mix(in srgb, var(--primary) 60%, transparent); outline-offset: 2px; }
+    .muted { color: var(--muted); }
     .skip {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 20;
-      transform: translateY(-160%);
-      padding: 10px 14px;
-      border-radius: 6px;
-      background: var(--text);
-      color: #fff;
-      font-weight: 800;
+      position: fixed; top: 10px; left: 10px; z-index: 30;
+      padding: 10px 14px; border-radius: var(--radius-control);
+      background: var(--primary); color: var(--btn-text); font-weight: 800;
+      transform: translateY(-200%);
     }
     .skip:focus { transform: none; }
 
-    .wrap {
-      width: min(var(--max), calc(100% - 40px));
-      margin: auto;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    /* Top bar */
+    .topnav {
+      position: sticky; top: 0; z-index: 20;
+      background: color-mix(in srgb, var(--sidebar-bg) 92%, transparent);
       border-bottom: 1px solid var(--line);
-      background: rgba(var(--surface-rgb), .94);
       backdrop-filter: blur(12px);
     }
-    .nav {
-      min-height: 68px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
+    .topnav-inner {
+      display: flex; align-items: center; gap: 20px;
+      max-width: 1200px; min-height: 64px; margin: 0 auto; padding: 0 28px;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 850;
+    .brand { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; font-weight: 900; }
+    .brand img { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+    .topnav nav { display: flex; flex: 1; justify-content: center; gap: 4px; min-width: 0; }
+    .topnav nav a { padding: 8px 12px; border-radius: var(--radius-control); color: var(--muted); font-size: 14px; font-weight: 700; white-space: nowrap; }
+    .topnav nav a:hover, .topnav nav a.active { background: var(--panel-2); color: var(--text); }
+    .topnav-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+    .topnav-actions .button-link { min-height: 38px; padding: 8px 14px; font-size: 14px; }
+    .theme-toggle {
+      display: inline-grid; place-items: center;
+      width: 38px; height: 38px; padding: 0;
+      border: 1px solid var(--line-dark); border-radius: var(--radius-control);
+      background: var(--surface); color: var(--text); cursor: pointer;
     }
-    .brand img {
-      width: 32px;
-      height: 32px;
-      border-radius: 7px;
-      object-fit: cover;
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-    }
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .nav-links a:hover { color: var(--text); }
-
-    .button {
-      display: inline-flex;
-      min-height: 46px;
-      align-items: center;
-      justify-content: center;
-      padding: 11px 17px;
-      border: 1px solid var(--primary);
-      border-radius: 6px;
-      background: var(--primary);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 800;
-    }
-    .button:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
-    .button.secondary {
-      background: var(--surface);
-      color: var(--text);
-      border-color: var(--line-dark);
-    }
-    .button.secondary:hover {
-      background: var(--soft-bg);
-      border-color: var(--line-dark);
-    }
-    .button.small {
-      min-height: 38px;
-      padding: 8px 13px;
-      font-size: 14px;
+    .theme-toggle:hover { background: var(--panel-2); }
+    .theme-toggle svg { width: 16px; height: 16px; }
+    .theme-toggle .theme-toggle-dark { display: none; }
+    :root[data-theme="dark"] .theme-toggle .theme-toggle-dark { display: inline; }
+    :root[data-theme="dark"] .theme-toggle .theme-toggle-light { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .theme-toggle-dark { display: inline; }
+      :root:not([data-theme="light"]) .theme-toggle .theme-toggle-light { display: none; }
     }
 
+    .content {
+      width: 100%; max-width: 1200px; margin: 0 auto;
+      padding: 24px 28px 28px; display: grid; grid-template-columns: minmax(0, 1fr);
+      gap: 22px; align-content: start;
+    }
+
+    /* Building blocks from the dashboard */
+    .eyebrow { margin: 0 0 6px; color: var(--primary); text-transform: uppercase; font-size: 12px; font-weight: 900; letter-spacing: .02em; }
+    .panel, .product, .feature, .sdk {
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: var(--radius-card); box-shadow: var(--shadow);
+    }
+    .panel { padding: 24px; }
+    .panel h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .panel-heading p.muted { max-width: 640px; margin-top: 8px; }
+    .button-link {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 42px; padding: 11px 16px;
+      border: 1px solid var(--primary); border-radius: var(--radius-control);
+      background: var(--primary); color: var(--btn-text);
+      font-weight: 900; line-height: 1.2; text-align: center; white-space: nowrap;
+    }
+    .button-link:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+    .button-link.secondary-link { background: var(--surface); color: var(--text); border-color: var(--line-dark); }
+    .button-link.secondary-link:hover { background: var(--panel-2); }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px; width: max-content;
+      padding: 5px 9px; border-radius: 999px;
+      background: var(--soft-bg); color: var(--muted);
+      font-size: 12px; font-weight: 900; white-space: nowrap;
+    }
+    .status-pill.good { background: var(--good-bg); color: var(--good); }
+    .status-pill.info { background: var(--tag-bg); color: var(--primary); }
+    .status-pill.bad { background: var(--danger-bg); color: var(--bad); }
+    .code-sample {
+      margin: 0; padding: 18px;
+      border: 1px solid var(--line); border-radius: var(--radius-card);
+      background: var(--code-bg); color: var(--code-text);
+      overflow-x: auto; font-size: 13px; line-height: 1.7;
+    }
+    .code-label { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px; color: var(--muted); font: 800 11px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .json-key { color: var(--primary); }
+    .json-str { color: var(--good); }
+    .json-null { color: var(--bad); }
+    .notice {
+      padding: 14px 16px; border: 1px solid var(--warn); border-radius: var(--radius-card);
+      background: var(--warning-bg); color: var(--body-copy); font-size: 14px;
+    }
+    .icon {
+      display: inline-grid; place-items: center; flex: 0 0 auto;
+      width: 36px; height: 36px; border-radius: var(--radius-card);
+      background: var(--tag-bg); color: var(--primary);
+    }
+    .icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Hero */
     .hero {
-      padding: 92px 0 76px;
-      border-bottom: 1px solid var(--line);
-      background: var(--hero-bg);
+      position: relative; overflow: hidden; padding: 48px 44px;
+      background:
+        radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 42%),
+        radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 38%),
+        var(--panel);
     }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
-      gap: 58px;
-      align-items: center;
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr); gap: 36px; align-items: center; }
+    .hero-logo { display: block; width: 64px; height: 64px; margin-bottom: 18px; border-radius: 50%; object-fit: cover; }
+    .hero h1 { max-width: 760px; margin: 4px 0 16px; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -.01em; }
+    .hero .lead { max-width: 640px; color: var(--muted); font-size: clamp(17px, 1.6vw, 19px); line-height: 1.6; }
+    .hero .button-row { margin-top: 26px; }
+    .hero-visual { display: grid; gap: 12px; }
+    .hero-visual .log-preview { background: var(--panel); box-shadow: var(--shadow); }
+    .verdict-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-control);
+      background: var(--panel); box-shadow: var(--shadow); font-size: 13px;
     }
-    .eyebrow {
-      margin: 0 0 12px;
-      color: var(--primary);
-      font-size: 13px;
-      font-weight: 800;
-    }
-    h1, h2, h3, p { text-wrap: pretty; }
-    h1 {
-      max-width: 760px;
-      margin: 0 0 20px;
-      font-size: clamp(40px, 5.6vw, 68px);
-      line-height: 1.04;
-      letter-spacing: 0;
-    }
-    h2 {
-      max-width: 760px;
-      margin: 0 0 14px;
-      font-size: clamp(30px, 3.6vw, 44px);
-      line-height: 1.12;
-      letter-spacing: 0;
-    }
-    h3 {
-      margin: 0 0 8px;
-      font-size: 20px;
-      line-height: 1.25;
-    }
-    p { margin: 0; }
-    .lead {
-      max-width: 680px;
-      color: var(--muted);
-      font-size: clamp(18px, 2vw, 21px);
-      line-height: 1.65;
-    }
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 30px;
-    }
-    .trust-line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 18px;
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 650;
-    }
+    .verdict-row code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .check-card {
-      border: 1px solid var(--line-dark);
-      border-radius: 8px;
-      background: var(--surface);
-      overflow: hidden;
-    }
-    .check-card header {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
-      background: var(--soft-bg);
-    }
-    .check-card header strong {
-      display: block;
-      margin-bottom: 3px;
-      font-size: 16px;
-    }
-    .check-card header span,
-    .check-row span,
-    .card p,
-    .price-card p,
-    .trust-row span,
-    .footer-note {
-      color: var(--muted);
-    }
-    .check-row {
-      display: grid;
-      grid-template-columns: 135px 1fr;
-      gap: 20px;
-      align-items: start;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
-    }
-    .check-row:last-child { border-bottom: 0; }
-    .check-row strong { display: block; color: var(--text); }
-    .check-row b {
-      display: inline-block;
-      margin-right: 8px;
-      padding: 3px 7px;
-      border-radius: 5px;
-      background: var(--danger-bg);
-      color: var(--bad);
-      font-size: 12px;
-      line-height: 1.3;
-    }
-    .badge {
-      min-width: 82px;
-      padding: 6px 9px;
-      border-radius: 5px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 850;
-    }
-    .badge.bad { background: var(--danger-bg); color: var(--bad); }
-    .badge.warn { background: var(--warning-bg); color: var(--warn); }
-    .badge.good { background: var(--good-bg); color: var(--good); }
+    /* Product row */
+    .product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .product { display: flex; flex-direction: column; gap: 10px; padding: 18px; transition: border-color .15s ease; }
+    .product:hover { border-color: var(--primary); }
+    .product-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .product h3 { font-size: 18px; }
+    .product p { color: var(--muted); font-size: 14px; }
+    .product .more { margin-top: auto; padding-top: 2px; color: var(--primary); font-size: 14px; font-weight: 800; }
 
-    .section {
-      padding: 82px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .section.alt { background: var(--soft-bg); }
-    .section-head {
-      max-width: 780px;
-      margin-bottom: 34px;
-    }
+    /* Feature cards */
+    .split { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .9fr); gap: 18px; align-items: start; }
+    .feature-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .feature-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .feature { display: flex; gap: 12px; padding: 16px; box-shadow: none; }
+    .feature h3 { margin-bottom: 4px; font-size: 15px; }
+    .feature p { color: var(--muted); font-size: 14px; }
+    .feature code { font-size: 13px; }
+    .stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .split > *, .hero-grid > * { min-width: 0; }
 
-    .proof-grid,
-    .card-grid,
-    .pricing-grid {
-      display: grid;
-      gap: 16px;
+    /* Discord log preview */
+    .log-preview {
+      padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--bad);
+      border-radius: var(--radius-control); background: var(--soft-bg); font-size: 14px;
     }
-    .proof-grid { grid-template-columns: repeat(4, 1fr); }
-    .card-grid { grid-template-columns: repeat(3, 1fr); }
-    .pricing-grid { grid-template-columns: repeat(4, 1fr); }
+    .log-preview strong { display: block; margin-bottom: 4px; }
+    .log-preview dl { display: grid; gap: 8px; margin: 12px 0; }
+    .log-preview dt { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .log-preview dd { margin: 2px 0 0; }
+    .log-preview .mention { padding: 0 3px; border-radius: 3px; background: var(--tag-bg); color: var(--primary); font-weight: 700; }
+    .log-preview small { color: var(--muted); font-size: 12px; }
+    .steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+    .steps li {
+      counter-increment: step; padding: 10px 12px;
+      border: 1px solid var(--line); border-radius: var(--radius-control);
+      color: var(--muted); font-size: 13px; font-weight: 700;
+    }
+    .steps li::before { content: counter(step) ". "; color: var(--primary); }
+    .setup-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; counter-reset: setup; }
+    .setup-list li { counter-increment: setup; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 4px 12px; font-size: 14px; }
+    .setup-list li::before {
+      content: counter(setup); grid-row: span 2;
+      display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+      background: var(--primary); color: var(--btn-text); font-weight: 900; font-size: 13px;
+    }
+    .setup-list span { color: var(--muted); }
+    .box { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-card); }
 
-    .proof,
-    .card,
-    .price-card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface);
-    }
-    .proof { padding: 22px; }
-    .proof strong { display: block; margin-bottom: 6px; font-size: 18px; }
-    .proof span { color: var(--muted); font-size: 14px; }
+    /* Command table */
+    .subheading { margin: 26px 0 12px; font-size: 18px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-card); }
+    table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    th { background: var(--soft-bg); color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    td:first-child { white-space: nowrap; }
+    td small { display: block; margin-top: 3px; color: var(--muted); }
 
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      counter-reset: step;
-    }
-    .step {
-      counter-increment: step;
-      padding: 26px 0 0;
-      border-top: 2px solid var(--line-dark);
-    }
-    .step::before {
-      content: counter(step);
-      display: grid;
-      width: 34px;
-      height: 34px;
-      place-items: center;
-      margin-bottom: 18px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 850;
-    }
-    .step p { color: var(--muted); }
+    /* API */
+    .modes { display: grid; gap: 10px; margin: 18px 0; }
+    .modes div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-control); }
+    .modes dt { font: 800 13px/1.5 var(--mono); color: var(--primary); }
+    .modes dd { margin: 0; color: var(--body-copy); font-size: 14px; }
 
-    .card { padding: 24px; }
-    .card small {
-      display: block;
-      margin-bottom: 18px;
-      color: var(--primary);
-      font-size: 13px;
-      font-weight: 800;
-    }
+    /* SDKs */
+    .sdk-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .sdk { display: grid; gap: 10px; align-content: start; padding: 16px; box-shadow: none; }
+    .sdk-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .sdk h3 { font-size: 16px; }
+    .sdk a { color: var(--primary); font-size: 13px; font-weight: 800; }
+    .sdk .code-sample { padding: 10px 12px; font-size: 12px; white-space: nowrap; }
 
-    .price-card {
-      display: flex;
-      min-height: 350px;
-      flex-direction: column;
-      padding: 24px;
-    }
-    .price-card.featured {
-      border-color: var(--primary);
-      box-shadow: inset 0 4px 0 var(--primary);
-    }
-    .flag {
-      align-self: flex-start;
-      margin-bottom: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: var(--tag-bg);
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 850;
-    }
-    .price {
-      margin: 16px 0 6px;
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 900;
-    }
-    .price small {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 650;
-    }
-    .price-card ul {
-      flex: 1;
-      margin: 22px 0;
-      padding-left: 18px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-    .price-card li { margin: 8px 0; }
-    .price-card .button { width: 100%; }
+    /* Get started */
+    .quickstart-panel { background: var(--tag-bg); }
+    .paths { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .path { display: grid; gap: 10px; align-content: start; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--panel); }
+    .path h3 { font-size: 18px; }
+    .path p { color: var(--muted); }
+    .path .button-row { margin-top: 6px; }
 
-    .trust-grid {
-      display: grid;
-      grid-template-columns: .9fr 1.1fr;
-      gap: 44px;
-      align-items: start;
-    }
-    .trust-list {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface);
-      overflow: hidden;
-    }
-    .trust-row {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 18px;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
-    }
-    .trust-row:last-child { border-bottom: 0; }
-
-    .pilot {
-      padding: 38px;
-      border: 1px solid var(--line-dark);
-      border-radius: 8px;
-      background: var(--surface);
-    }
-    .pilot-grid {
-      display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 38px;
-      align-items: center;
-    }
-    .pilot ol {
-      margin: 0;
-      padding-left: 22px;
-      color: var(--muted);
-    }
-    .pilot li { margin: 10px 0; }
-
-    .links-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .links-row a {
-      padding: 10px 13px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: var(--surface);
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .links-row a:hover {
-      color: var(--text);
-      border-color: var(--line-dark);
-    }
-
-    footer {
-      padding: 46px 0;
-      background: var(--surface);
-    }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 38px;
-    }
-    .footer-links {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px 24px;
-    }
-    .footer-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 650;
-    }
+    /* Footer */
+    .site-footer { display: grid; gap: 18px; padding: 8px 4px 20px; color: var(--muted); font-size: 14px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
     .footer-links a:hover { color: var(--text); }
-    .copyright {
-      margin-top: 30px;
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .footer-note { font-size: 13px; }
 
-    @media (max-width: 940px) {
-      .hero-grid,
-      .trust-grid,
-      .pilot-grid {
-        grid-template-columns: 1fr;
-      }
-      .proof-grid,
-      .pricing-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .card-grid,
-      .steps {
-        grid-template-columns: 1fr;
-      }
-      .nav-links a:not(.button) { display: none; }
+    @media (max-width: 1000px) {
+      .split, .hero-grid { grid-template-columns: minmax(0, 1fr); }
+      .hero-visual { max-width: 520px; }
+      .sdk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .feature-grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-
-    @media (max-width: 620px) {
-      .wrap { width: min(100% - 28px, var(--max)); }
-      .hero { padding: 68px 0 54px; }
-      .section { padding: 62px 0; }
-      h1 { font-size: 40px; }
-      h2 { font-size: 30px; }
-      .nav { min-height: 64px; }
-      .nav-links .button { display: none; }
-      .hero-actions .button { width: 100%; }
-      .proof-grid,
-      .pricing-grid {
-        grid-template-columns: 1fr;
-      }
-      .check-row,
-      .trust-row {
-        grid-template-columns: 1fr;
-      }
-      .badge { justify-self: start; }
-      .pilot { padding: 26px; }
-      .footer-grid { grid-template-columns: 1fr; }
-      .footer-links { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 920px) {
+      .topnav-inner { gap: 12px; padding: 0 16px; }
+      .brand span, .topnav-actions .button-link { display: none; }
+      .topnav nav { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+      .topnav nav::-webkit-scrollbar { display: none; }
+      .topnav nav a { flex: 0 0 auto; padding: 8px 10px; }
     }
-
-    @media (max-width: 420px) {
-      .brand span { display: none; }
-      h1 { font-size: 36px; }
-      .footer-links { grid-template-columns: 1fr; }
+    @media (max-width: 680px) {
+      html { scroll-padding-top: 76px; }
+      .content { padding: 16px; gap: 16px; }
+      .panel { padding: 20px 18px; }
+      .hero { padding: 32px 20px 28px; }
+      .hero .button-link { flex: 1 1 100%; }
+      .panel-heading { flex-direction: column; }
+      .panel-heading .button-row, .path .button-row { width: 100%; }
+      .panel-heading .button-link, .path .button-link { flex: 1 1 auto; }
+      .product-grid, .feature-grid, .feature-grid.three, .sdk-grid, .paths, .steps { grid-template-columns: minmax(0, 1fr); }
+      .modes div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
     }
-
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
+      .product { transition: none; }
     }
   </style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-
-<header class="topbar">
-  <nav class="nav wrap" aria-label="Primary navigation">
-    <a class="brand" href="#top"><img src="lsa.png" alt=""><span>LinkShieldAI</span></a>
-    <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#uses">Use cases</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#trust">Trust</a>
-      <a class="button small" href="https://developer.linkshieldai.com/portal.php?signup=1">Start free</a>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="#top"><img src="lsa.png" alt="" width="34" height="34"><span>LinkShieldAI</span></a>
+    <nav aria-label="Sections">
+      <a href="#discord">Discord bot</a>
+      <a href="#api">API</a>
+      <a href="#sdks">SDKs</a>
+      <a href="#portal">Portal</a>
+      <a href="#extension">Extension</a>
+      <a href="https://docs.linkshieldai.com/">Docs</a>
+    </nav>
+    <div class="topnav-actions">
+      <button type="button" class="theme-toggle" aria-label="Toggle light or dark theme"><svg class="theme-toggle-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg><svg class="theme-toggle-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      <a class="button-link" href="https://discord.com/oauth2/authorize?client_id=839192943931162643&amp;permissions=1099511965760&amp;scope=bot">Add to Discord</a>
     </div>
-  </nav>
+  </div>
 </header>
 
-<main id="main">
-  <section class="hero" id="top">
-    <div class="wrap hero-grid">
+<main class="content" id="main">
+  <section class="panel hero" id="top">
+    <div class="hero-grid">
       <div>
-        <p class="eyebrow">URL safety API</p>
-        <h1>Check suspicious links before people click them.</h1>
-        <p class="lead">LinkShieldAI helps you check URLs for phishing, scams, malware, NSFW content, and other unsafe destinations. Add it to your app, support flow, or security process with one API.</p>
-        <div class="hero-actions">
-          <a class="button" href="https://developer.linkshieldai.com/portal.php?signup=1">Start free</a>
-          <a class="button secondary" href="https://docs.linkshieldai.com/">Read the docs</a>
-        </div>
-        <div class="trust-line">
-          <span>1,000 free scans</span>
-          <span>No card needed</span>
-          <span>SDKs for common languages</span>
+        <img class="hero-logo" src="lsa.png" alt="LinkShieldAI logo" width="64" height="64">
+        <p class="eyebrow">Link protection</p>
+        <h1>Stop malicious links before anyone clicks them.</h1>
+        <p class="lead">LinkShieldAI checks links for phishing, scams, malware and NSFW content. Protect your Discord server with the bot, add scanning to your own app with the API, or browse with the Chrome extension.</p>
+        <div class="button-row">
+          <a class="button-link" href="https://discord.com/oauth2/authorize?client_id=839192943931162643&amp;permissions=1099511965760&amp;scope=bot">Add to Discord</a>
+          <a class="button-link secondary-link" href="https://developer.linkshieldai.com/portal.php?signup=1">Get a free API key</a>
         </div>
       </div>
-
-      <aside class="check-card" aria-label="Example API result">
-        <header>
-          <strong>What a check returns</strong>
-          <span>Based on the public API documented today.</span>
-        </header>
-        <div class="check-row">
-          <strong>Basic check</strong>
-          <span><b>result</b>Returns a simple safety result such as likely safe, might be malicious, or no malicious signal found.</span>
+      <div class="hero-visual">
+        <p class="code-label">In your Discord log channel</p>
+        <div class="log-preview" aria-label="Example of the log the bot posts after removing a link">
+          <strong>Malicious Link Detected!</strong>
+          <span>A malicious link was detected and removed from the chat.</span>
+          <dl>
+            <div><dt>Author</dt><dd><span class="mention">@member</span></dd></div>
+            <div><dt>Channel</dt><dd><span class="mention">#general</span></dd></div>
+            <div><dt>Time</dt><dd>just now</dd></div>
+          </dl>
         </div>
-        <div class="check-row">
-          <strong>Detailed check</strong>
-          <span><b>result</b>Can also return a screenshot URL and a detected phishing target or brand tag.</span>
+        <p class="code-label">From the API</p>
+        <div class="verdict-row">
+          <code>https://example.com</code>
+          <span class="status-pill good">SAFE</span>
         </div>
-        <div class="check-row">
-          <strong>NSFW check</strong>
-          <span><b>result</b>Returns true or false when checking whether a URL is flagged as NSFW.</span>
-        </div>
-        <div class="check-row">
-          <strong>Chimera</strong>
-          <span><b>result</b>Returns classification details like probability, detection method, matched signatures, and URL.</span>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap proof-grid">
-      <div class="proof"><strong>Quick to test</strong><span>Create a key and try 1,000 scans for free.</span></div>
-      <div class="proof"><strong>Simple results</strong><span>Get JSON responses your app can use.</span></div>
-      <div class="proof"><strong>Built for teams</strong><span>Use it in apps, support queues, security tools, and review flows.</span></div>
-      <div class="proof"><strong>Developer friendly</strong><span>Use the API directly or start with an SDK.</span></div>
-    </div>
-  </section>
-
-  <section class="section alt" id="how">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">How it works</p>
-        <h2>Send a URL. Get a clear result.</h2>
-        <p class="lead">The goal is simple: help your team decide what should be allowed, blocked, or reviewed.</p>
-      </div>
-      <div class="steps">
-        <div class="step"><h3>Submit the link</h3><p>Send any URL you want to check, such as a user-submitted link or a link found during an investigation.</p></div>
-        <div class="step"><h3>Review the result</h3><p>Receive JSON fields such as result, screenshot URL, tag, probability, detection method, or matched signatures depending on the endpoint.</p></div>
-        <div class="step"><h3>Use it in your workflow</h3><p>Block risky links, hold uncertain ones for review, or add the result to your own tools.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="product">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">What you get</p>
-        <h2>Useful checks without a complicated setup.</h2>
-        <p class="lead">LinkShieldAI is meant to fit into the systems your team already uses.</p>
+  <section class="product-grid" aria-label="Products">
+    <a class="product" href="#discord">
+      <div class="product-top">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <span class="status-pill info">Discord</span>
       </div>
-      <div class="card-grid">
-        <article class="card"><small>Standard</small><h3>Fast URL checks</h3><p>Good for common checks in apps, forms, support queues, and internal tools.</p></article>
-        <article class="card"><small>Detailed</small><h3>More context when needed</h3><p>Use the detailed endpoint when you want a safety result, screenshot URL, and detected brand tag.</p></article>
-        <article class="card"><small>Deep</small><h3>Extra analysis for higher risk</h3><p>Use deeper checks when the link is important enough to spend more time on.</p></article>
-        <article class="card"><small>Portal</small><h3>Manage keys and usage</h3><p>Use the developer portal to view usage, rotate keys, configure webhooks, and report false positives.</p></article>
-        <article class="card"><small>SDKs</small><h3>Start with familiar tools</h3><p>SDKs are available for Python, JavaScript, PHP, and Rust.</p></article>
-        <article class="card"><small>Status</small><h3>Check service health</h3><p>Use the status page and documentation before relying on the API in production.</p></article>
+      <h3>Discord bot</h3>
+      <p>Removes malicious links, scam images and unwanted invites from your server.</p>
+      <span class="more">See features</span>
+    </a>
+    <a class="product" href="#api">
+      <div class="product-top">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span>
+        <span class="status-pill info">REST</span>
       </div>
-    </div>
+      <h3>Scanning API</h3>
+      <p>Check any URL from your own code with a single request.</p>
+      <span class="more">See the API</span>
+    </a>
+    <a class="product" href="#sdks">
+      <div class="product-top">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5V8z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg></span>
+        <span class="status-pill info">4 languages</span>
+      </div>
+      <h3>SDKs</h3>
+      <p>Python, JavaScript, PHP and Rust clients, each with a command line tool.</p>
+      <span class="more">Install an SDK</span>
+    </a>
+    <a class="product" href="#extension">
+      <div class="product-top">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20z"/></svg></span>
+        <span class="status-pill info">Chrome</span>
+      </div>
+      <h3>Chrome extension</h3>
+      <p>Checks the sites you visit and warns you when one is flagged.</p>
+      <span class="more">Get the extension</span>
+    </a>
   </section>
 
-  <section class="section alt" id="uses">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Common use cases</p>
-        <h2>Where LinkShieldAI helps.</h2>
-      </div>
-      <div class="card-grid">
-        <article class="card"><h3>User-submitted links</h3><p>Check links before they appear in comments, profiles, marketplaces, forms, or messages.</p></article>
-        <article class="card"><h3>Support and moderation</h3><p>Help your team review links that arrive through tickets, reports, or user complaints.</p></article>
-        <article class="card"><h3>Security investigations</h3><p>Add another URL-risk signal when your team is checking suspicious links.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="pricing">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Pricing</p>
-        <h2>Start free. Ask for more when you need it.</h2>
-        <p class="lead">The public docs list 1,000 requests per month. If you need more, sign in to the developer portal or contact support.</p>
-      </div>
-      <div class="pricing-grid">
-        <article class="price-card">
-          <h3>Free</h3>
-          <div class="price">$0</div>
-          <p>1,000 requests/month</p>
-          <ul><li>Create an API key</li><li>Use SDKs or direct HTTPS calls</li><li>Good for testing and small projects</li></ul>
-          <a class="button secondary" href="https://developer.linkshieldai.com/portal.php?signup=1">Start free</a>
-        </article>
-        <article class="price-card featured">
-          <span class="flag">More usage</span>
-          <h3>Higher limits</h3>
-          <div class="price">Portal</div>
-          <p>Request more capacity from your account.</p>
-          <ul><li>View usage in the portal</li><li>Expand beyond the free monthly limit</li><li>Use support if you need help</li></ul>
-          <a class="button" href="https://developer.linkshieldai.com/portal.php">Open portal</a>
-        </article>
-        <article class="price-card">
-          <h3>Team use</h3>
-          <div class="price">Talk</div>
-          <p>For apps, bots, moderation, and security workflows.</p>
-          <ul><li>Discuss your use case</li><li>Choose the right endpoint</li><li>Plan retries and error handling</li></ul>
-          <a class="button secondary" href="mailto:support@linkshieldai.com?subject=LinkShieldAI%20team%20use">Contact support</a>
-        </article>
-        <article class="price-card">
-          <h3>Custom</h3>
-          <div class="price">Custom</div>
-          <p>For larger or commercial deployments.</p>
-          <ul><li>Explain your volume needs</li><li>Discuss billing options</li><li>Review commercial terms</li></ul>
-          <a class="button secondary" href="mailto:support@linkshieldai.com?subject=Custom%20LinkShieldAI%20usage">Contact us</a>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section alt" id="trust">
-    <div class="wrap trust-grid">
+  <section class="panel" id="discord">
+    <div class="panel-heading">
       <div>
-        <p class="eyebrow">Trust</p>
-        <h2>Clear limits and plain answers.</h2>
-        <p class="lead">No link scanner is perfect. LinkShieldAI is built to help reduce risk, not replace your own review process.</p>
+        <p class="eyebrow">Discord bot</p>
+        <h2>Every link in your server gets checked.</h2>
+        <p class="muted">Once the bot joins, it scans links in new and edited messages. Messages with malicious links are removed, a short notice appears in the channel, and the details go to your log channel.</p>
       </div>
-      <div class="trust-list">
-        <div class="trust-row"><strong>Authentication</strong><span>Direct API calls use an API key in the key query parameter. SDKs can use a passed key or LINKSHIELDAI_API_KEY.</span></div>
-        <div class="trust-row"><strong>Portal</strong><span>The developer portal is used to view usage, rotate keys, configure webhooks, and report false positives.</span></div>
-        <div class="trust-row"><strong>Screenshots</strong><span>Detailed scans may capture a temporary screenshot for review.</span></div>
-        <div class="trust-row"><strong>Status</strong><span>Service health is published on the status page when measured data exists.</span></div>
-        <div class="trust-row"><strong>Support</strong><span>Questions, security reports, and false-positive reports can go to support@linkshieldai.com.</span></div>
+      <div class="button-row">
+        <a class="button-link" href="https://discord.com/oauth2/authorize?client_id=839192943931162643&amp;permissions=1099511965760&amp;scope=bot">Add to Discord</a>
+        <a class="button-link secondary-link" href="https://discord.gg/PE7ZTcdtGZ">Support server</a>
       </div>
     </div>
-  </section>
 
-  <section class="section">
-    <div class="wrap pilot">
-      <div class="pilot-grid">
+    <div class="split">
+      <div class="feature-grid">
+        <article class="feature">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>
+          <div><h3>Link scanning</h3><p>Checks links in new and edited messages. Short links and redirects are followed to the real destination first.</p></div>
+        </article>
+        <article class="feature">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span>
+          <div><h3>Image scam scanning</h3><p>Reads the text inside posted images and removes scam images.</p></div>
+        </article>
+        <article class="feature">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M9 8l6 6M15 8l-6 6"/></svg></span>
+          <div><h3>Scam message rules</h3><p>Removes Steam phishing messages and NSFW server promotion.</p></div>
+        </article>
+        <article class="feature">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg></span>
+          <div><h3>Invite filtering</h3><p>Removes invites to blacklisted servers. Admins can add their own with <code>/blacklist_server</code>.</p></div>
+        </article>
+        <article class="feature">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><path d="m3 3 18 18"/></svg></span>
+          <div><h3>NSFW protection</h3><p>Turn on <code>/nsfw_protection</code> to also remove links to adult sites.</p></div>
+        </article>
+        <article class="feature">
+          <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg></span>
+          <div><h3>Quarantine</h3><p>Time out members who keep posting bad links. You set the limit and the length, from 30 minutes to 1 week.</p></div>
+        </article>
+      </div>
+
+      <div class="stack">
+        <div class="box">
+          <p class="code-label">Setup</p>
+          <ol class="setup-list">
+            <li><strong>Add the bot</strong><span>Pick your server and approve the permissions.</span></li>
+            <li><strong>Choose a log channel</strong><span>Run <code>/set_logs</code> so removals are posted where your team can see them.</span></li>
+            <li><strong>Tune it</strong><span>Set your <code>/quarantine</code> limits and turn on <code>/nsfw_protection</code> if you want it.</span></li>
+          </ol>
+        </div>
         <div>
-          <p class="eyebrow">Try it safely</p>
-          <h2>Test it before you block anything.</h2>
-          <p class="lead">Run LinkShieldAI quietly in the background first. Compare the results with your own review, then decide if it should become part of your live workflow.</p>
-          <div class="hero-actions">
-            <a class="button" href="mailto:support@linkshieldai.com?subject=30-day%20URL-risk%20design%20partnership">Discuss a pilot</a>
-            <a class="button secondary" href="https://developer.linkshieldai.com/portal.php?signup=1">Create a free key</a>
-          </div>
+          <p class="code-label">When a malicious link is posted</p>
+          <ol class="steps">
+            <li>Link is posted</li>
+            <li>Redirects are followed</li>
+            <li>Link is checked</li>
+            <li>Removed and logged</li>
+          </ol>
         </div>
-        <ol>
-          <li>Choose one workflow to test.</li>
-          <li>Send links to the API without blocking users.</li>
-          <li>Review the results after two weeks.</li>
-          <li>Keep using it, change the setup, or stop.</li>
-        </ol>
       </div>
+    </div>
+
+    <h3 class="subheading">Commands</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Command</th><th>What it does</th><th>Who can use it</th></tr></thead>
+        <tbody>
+          <tr><td><code>/set_logs</code></td><td>Choose the channel where the bot posts its logs.</td><td><span class="status-pill info">Manage Channels</span><small>or Manage Server</small></td></tr>
+          <tr><td><code>/quarantine</code></td><td>Set how many malicious links a member can post before a timeout, and how long the timeout lasts.</td><td><span class="status-pill info">Administrator</span></td></tr>
+          <tr><td><code>/nsfw_protection</code></td><td>Turn NSFW link protection on or off.</td><td><span class="status-pill info">Administrator</span></td></tr>
+          <tr><td><code>/blacklist_server</code></td><td>Block invites to a server. Undo it with <code>/unblacklist_server</code>.</td><td><span class="status-pill info">Administrator</span></td></tr>
+          <tr><td><code>/config</code></td><td>See this server's settings.</td><td><span class="status-pill info">Manage Server</span></td></tr>
+          <tr><td><code>/analyze_site</code></td><td>Run a detailed scan and get a screenshot and brand tag back.</td><td><span class="status-pill good">Everyone</span></td></tr>
+          <tr><td><code>/report_link</code></td><td>Send a link to the LinkShieldAI team for review.<small>Also in the message menu as Report a link</small></td><td><span class="status-pill good">Everyone</span></td></tr>
+          <tr><td><code>/report_server</code></td><td>Report a server by its invite link.<small>Also in the message menu as Report a server</small></td><td><span class="status-pill good">Everyone</span></td></tr>
+          <tr><td><code>/lookup</code></td><td>See a member's details and whether they have posted a malicious link.</td><td><span class="status-pill good">Everyone</span></td></tr>
+          <tr><td><code>/leaderboard</code></td><td>See the top reporters by reputation.</td><td><span class="status-pill good">Everyone</span></td></tr>
+          <tr><td><code>/stats</code></td><td>See the bot's statistics.</td><td><span class="status-pill good">Everyone</span></td></tr>
+          <tr><td><code>/help</code></td><td>List the available commands.</td><td><span class="status-pill good">Everyone</span></td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
-  <section class="section alt">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Resources</p>
-        <h2>Docs, SDKs, and open tools.</h2>
-        <p class="lead">Developers can inspect the API, install an SDK, or review related tools before integrating.</p>
-      </div>
-      <div class="links-row">
-        <a href="https://github.com/LinkShieldAI">GitHub organization</a>
-        <a href="https://pypi.org/project/linkshieldai/">Python SDK</a>
-        <a href="https://www.npmjs.com/package/linkshieldai">JavaScript SDK</a>
-        <a href="https://packagist.org/packages/linkshieldai/linkshieldai">PHP SDK</a>
-        <a href="https://github.com/LinkShieldAI/linkshieldai-extension">Browser extension</a>
-        <a href="https://discord.com/oauth2/authorize?client_id=839192943931162643&amp;permissions=1099511965760&amp;scope=bot">Discord bot</a>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="wrap">
-    <div class="footer-grid">
+  <section class="panel" id="api">
+    <div class="panel-heading">
       <div>
-        <a class="brand" href="#top"><img src="lsa.png" alt=""><span>LinkShieldAI</span></a>
-        <p class="footer-note" style="margin-top:14px">URL checks for products, support teams, and security workflows.</p>
+        <p class="eyebrow">Scanning API</p>
+        <h2>Check any URL with a single request.</h2>
+        <p class="muted">Send a URL to <code>POST /v1/scan</code> and get back a verdict of SAFE, MALICIOUS or UNKNOWN, with reason codes you can log or act on.</p>
       </div>
-      <div class="footer-links">
-        <a href="https://developer.linkshieldai.com/portal.php?signup=1">Create account</a>
-        <a href="https://docs.linkshieldai.com/">Documentation</a>
-        <a href="https://status.linkshieldai.com">Service status</a>
-        <a href="https://github.com/LinkShieldAI">Open source</a>
-        <a href="privacy-policy.html">Privacy</a>
-        <a href="terms-of-service.html">Terms</a>
-        <a href="refund-policy.html">Refunds</a>
-        <a href="mailto:support@linkshieldai.com">Support</a>
-        <a href="#pricing">Pricing</a>
+      <div class="button-row">
+        <a class="button-link" href="https://developer.linkshieldai.com/portal.php?signup=1">Get a free API key</a>
+        <a class="button-link secondary-link" href="https://docs.linkshieldai.com/">Read the docs</a>
       </div>
     </div>
-    <p class="copyright">(c) 2026 LinkShieldAI. Use security tools together with your own review process.</p>
-  </div>
-</footer>
+
+    <div class="split">
+      <div>
+        <dl class="modes" aria-label="Scan modes">
+          <div><dt>standard</dt><dd>Fast reputation and threat feed check.</dd></div>
+          <div><dt>detailed</dt><dd>Adds redirect, page preview, brand and screenshot signals when available.</dd></div>
+          <div><dt>deep</dt><dd>Adds page fingerprinting when earlier signals are inconclusive. Send <code>"ai": true</code> to add model analysis.</dd></div>
+        </dl>
+        <div class="feature-grid">
+          <article class="feature"><div><h3>Raw signals</h3><p>Add <code>include_signals</code> to see what each source returned and apply your own rules.</p></div></article>
+          <article class="feature"><div><h3>NSFW check</h3><p>Find out if a URL is flagged as NSFW.</p></div></article>
+          <article class="feature"><div><h3>Chimera</h3><p>Combines reputation data, fingerprint matching and AI detection into one result.</p></div></article>
+          <article class="feature"><div><h3>Usage headers</h3><p>Every response shows your remaining limits. Throttled calls include <code>Retry-After</code>.</p></div></article>
+        </div>
+      </div>
+      <div class="stack">
+        <div>
+          <p class="code-label">Request</p>
+<pre class="code-sample"><code>curl -X POST https://api.linkshieldai.com/v1/scan \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://example.com","mode":"standard"}'</code></pre>
+        </div>
+        <div>
+          <p class="code-label">Response</p>
+<pre class="code-sample"><code>{
+  <span class="json-key">"request_id"</span>: <span class="json-str">"7f4d..."</span>,
+  <span class="json-key">"mode"</span>: <span class="json-str">"standard"</span>,
+  <span class="json-key">"verdict"</span>: <span class="json-str">"SAFE"</span>,
+  <span class="json-key">"confidence"</span>: <span class="json-null">null</span>,
+  <span class="json-key">"risk_score"</span>: <span class="json-null">null</span>,
+  <span class="json-key">"threat_categories"</span>: [],
+  <span class="json-key">"reason_codes"</span>: [<span class="json-str">"KNOWN_SAFE_MATCH"</span>],
+  <span class="json-key">"brand_target"</span>: <span class="json-null">null</span>,
+  <span class="json-key">"screenshot_url"</span>: <span class="json-null">null</span>,
+  <span class="json-key">"freshness"</span>: <span class="json-str">"live"</span>
+}</code></pre>
+        </div>
+        <p class="notice">UNKNOWN means no decisive signal was found. Treat it as unverified, not as safe.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="sdks">
+    <div class="panel-heading">
+      <div>
+        <p class="eyebrow">SDKs</p>
+        <h2>Start in the language you already use.</h2>
+        <p class="muted">Every SDK calls the same endpoints and comes with typed results, automatic retries on temporary errors, and a command line tool.</p>
+      </div>
+    </div>
+    <div class="sdk-grid">
+      <article class="sdk">
+        <div class="sdk-head"><h3>Python</h3><a href="https://pypi.org/project/linkshieldai/">PyPI</a></div>
+        <pre class="code-sample"><code>pip install linkshieldai</code></pre>
+      </article>
+      <article class="sdk">
+        <div class="sdk-head"><h3>JavaScript</h3><a href="https://www.npmjs.com/package/linkshieldai">npm</a></div>
+        <pre class="code-sample"><code>npm install linkshieldai</code></pre>
+      </article>
+      <article class="sdk">
+        <div class="sdk-head"><h3>PHP</h3><a href="https://packagist.org/packages/linkshieldai/linkshieldai">Packagist</a></div>
+        <pre class="code-sample"><code>composer require linkshieldai/linkshieldai</code></pre>
+      </article>
+      <article class="sdk">
+        <div class="sdk-head"><h3>Rust</h3><a href="https://crates.io/crates/linkshieldai">crates.io</a></div>
+        <pre class="code-sample"><code>cargo add linkshieldai</code></pre>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" id="portal">
+    <div class="panel-heading">
+      <div>
+        <p class="eyebrow">Developer portal</p>
+        <h2>Keys, usage and alerts in one place.</h2>
+        <p class="muted">Sign up with email or Google and your first API key is ready as soon as you sign in.</p>
+      </div>
+      <div class="button-row">
+        <a class="button-link" href="https://developer.linkshieldai.com/portal.php?signup=1">Create a free account</a>
+        <a class="button-link secondary-link" href="https://developer.linkshieldai.com/portal.php">Sign in</a>
+      </div>
+    </div>
+    <div class="feature-grid three">
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg></span>
+        <div><h3>API keys</h3><p>Create, copy, rotate and revoke keys. New keys are shown once.</p></div>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+        <div><h3>Usage overview</h3><p>This month's scans, flagged results and your most recent requests.</p></div>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg></span>
+        <div><h3>Request history</h3><p>Every request from your keys with the full response, filters and CSV export.</p></div>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+        <div><h3>Webhooks</h3><p>Get notified when a URL is flagged or usage crosses a threshold. Add a secret to sign requests. Failed deliveries are retried.</p></div>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span>
+        <div><h3>False positive reports</h3><p>Report a result you think is wrong and follow its review status.</p></div>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z"/><path d="M12 6v6l4 2"/></svg></span>
+        <div><h3>Usage cap</h3><p>Choose what happens when you reach your monthly allowance.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" id="extension">
+    <div class="panel-heading">
+      <div>
+        <p class="eyebrow">Chrome extension</p>
+        <h2>Take LinkShieldAI with you while you browse.</h2>
+        <p class="muted">The extension checks the sites you open and warns you when one is flagged for phishing, scams, malware or NSFW content.</p>
+      </div>
+      <div class="button-row">
+        <a class="button-link" href="https://chromewebstore.google.com/detail/anfenjcapbgbgbfaokjmgglobcomnocd">Add to Chrome</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel quickstart-panel" aria-labelledby="start-title">
+    <p class="eyebrow">Get started</p>
+    <h2 id="start-title">Pick where you want protection.</h2>
+    <div class="paths">
+      <article class="path">
+        <h3>For Discord servers</h3>
+        <p>Invite the bot, then run <code>/set_logs</code> to choose a log channel.</p>
+        <div class="button-row">
+          <a class="button-link" href="https://discord.com/oauth2/authorize?client_id=839192943931162643&amp;permissions=1099511965760&amp;scope=bot">Add to Discord</a>
+          <a class="button-link secondary-link" href="https://discord.gg/PE7ZTcdtGZ">Support server</a>
+        </div>
+      </article>
+      <article class="path">
+        <h3>For developers</h3>
+        <p>Create a free account, copy your key and make your first call to <code>/v1/scan</code>.</p>
+        <div class="button-row">
+          <a class="button-link" href="https://developer.linkshieldai.com/portal.php?signup=1">Create a free account</a>
+          <a class="button-link secondary-link" href="https://docs.linkshieldai.com/">Read the docs</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://docs.linkshieldai.com/">Documentation</a>
+      <a href="https://status.linkshieldai.com">Service status</a>
+      <a href="https://developer.linkshieldai.com/portal.php">Developer portal</a>
+      <a href="https://discord.gg/PE7ZTcdtGZ">Support server</a>
+      <a href="mailto:support@linkshieldai.com">support@linkshieldai.com</a>
+      <a href="privacy-policy.html">Privacy</a>
+      <a href="terms-of-service.html">Terms</a>
+      <a href="refund-policy.html">Refunds</a>
+    </nav>
+    <p class="footer-note">No scanner catches every threat. Use LinkShieldAI alongside your own judgment.</p>
+    <p class="footer-note">© 2026 LinkShieldAI</p>
+  </footer>
+</main>
+<script>
+(function () {
+  var KEY = 'lsa-theme';
+  var root = document.documentElement;
+
+  function stored() {
+    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  }
+  function effective() {
+    var choice = stored();
+    if (choice === 'light' || choice === 'dark') return choice;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.querySelector('.theme-toggle').addEventListener('click', function () {
+    var next = effective() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    root.setAttribute('data-theme', next);
+  });
+
+  // Highlight the nav link for the section in view.
+  if (!('IntersectionObserver' in window)) return;
+  var links = {};
+  document.querySelectorAll('.topnav nav a[href^="#"]').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      Object.keys(links).forEach(function (id) { links[id].classList.toggle('active', id === entry.target.id); });
+    });
+  }, { rootMargin: '-35% 0px -60% 0px' });
+  ['top'].concat(Object.keys(links)).forEach(function (id) {
+    var section = document.getElementById(id);
+    if (section) observer.observe(section);
+  });
+})();
+</script>
 </body>
 </html>
