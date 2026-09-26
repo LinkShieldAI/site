@@ -60,62 +60,100 @@
 <header class="wrap">
   <span class="badge">Billing</span>
   <h1>Refund & Cancellation Policy</h1>
-  <p class="lead">This policy explains how LinkShieldAI handles subscriptions, cancellations, refunds, API usage, billing errors, and chargebacks for paid services.</p>
-  <p class="muted">Last updated: May 22, 2026</p>
+  <p class="lead">This policy explains how LinkShieldAI handles subscriptions, cancellations, plan changes, failed payments, refunds, and chargebacks for paid services.</p>
+  <p class="muted">Last updated: September 26, 2026</p>
 </header>
 
 <main class="wrap">
   <article class="doc">
-    <p class="notice">Our goal is to be clear and fair while keeping the API and security infrastructure sustainable. By using a paid LinkShieldAI service, you agree to this policy.</p>
+    <p class="notice">Our goal is to be clear and fair while keeping the API and security infrastructure sustainable. By buying a paid LinkShieldAI plan, you agree to this policy.</p>
 
-    <h2>1. Subscription and Cancellation</h2>
+    <h2>1. Payments</h2>
     <ul>
-      <li><strong>Cancel anytime:</strong> You can cancel your subscription through dashboard settings where available, or by contacting support.</li>
-      <li><strong>Effective date:</strong> After cancellation, your subscription normally remains active until the end of the current billing cycle, then it will not renew.</li>
-      <li><strong>Data and API keys:</strong> We do not immediately delete API keys, account records, or operational data upon cancellation, but paid access may be restricted when the billing period ends.</li>
-      <li><strong>Plan changes:</strong> Upgrades, downgrades, or usage-limit changes may take effect immediately or at the next billing cycle depending on the plan and billing provider.</li>
+      <li><strong>Payment processor:</strong> Payments for LinkShieldAI plans are processed by Dodo Payments, which acts as the merchant of record. Charges appear on your statement as <strong>DODOPAY_LINKSHIELDAI</strong>, and Dodo Payments emails your receipts and invoices.</li>
+      <li><strong>Prices and currency:</strong> Plan prices are set in US dollars. Checkout may show and charge the price in your local currency. When it does, the conversion includes a currency conversion fee.</li>
+      <li><strong>Taxes:</strong> Sales tax, VAT, or GST may be added at checkout depending on your location.</li>
+      <li><strong>Your agreement:</strong> Before you pay, you confirm that you have read and agree to this policy, the <a href="terms-of-service.html">Terms of Service</a>, and the <a href="privacy-policy.html">Privacy Policy</a>.</li>
     </ul>
 
-    <h2>2. General Refund Policy</h2>
-    <p>To keep billing simple, LinkShieldAI generally follows a no-refunds policy for active API usage and subscription periods, with common-sense exceptions listed below.</p>
+    <h2>2. Subscriptions</h2>
     <ul>
-      <li><strong>Monthly plans:</strong> Monthly subscriptions are generally non-refundable once the billing period has started.</li>
-      <li><strong>No partial refunds:</strong> We do not provide prorated refunds or credits for partial months of service or unused API calls.</li>
-      <li><strong>Unused credits:</strong> Unused API calls, credits, or quota do not roll over and are not refundable unless your plan explicitly says otherwise.</li>
-      <li><strong>Annual plans:</strong> For annual plans, you may request a refund within 7 days of the initial purchase or renewal, provided your API usage has not exceeded free-tier limits during that period.</li>
+      <li><strong>Monthly billing:</strong> Paid plans are billed monthly and renew automatically every month, counted from the day you subscribed or last changed plans, until you cancel.</li>
+      <li><strong>Included usage:</strong> Each plan includes a monthly scan allowance. Self-serve plans stop at the allowance, and there are no overage charges. Unused scans do not roll over and are not refundable.</li>
+      <li><strong>Free plan:</strong> The Free plan needs no payment and has no billing.</li>
     </ul>
 
-    <h2>3. Fairness Exceptions</h2>
-    <p>We may issue a full or partial refund, credit, or other reasonable remedy in the following situations:</p>
+    <h2>3. Cancellation</h2>
     <ul>
-      <li><strong>Technical failures:</strong> A confirmed LinkShieldAI bug or prolonged outage, outside scheduled maintenance, prevented meaningful use of the service for more than 24 consecutive hours.</li>
-      <li><strong>Billing errors:</strong> You were incorrectly charged due to a clerical, payment, or system error on our part.</li>
-      <li><strong>Duplicate charges:</strong> You were double-billed for the same account, period, or plan.</li>
-      <li><strong>Accidental renewal:</strong> You contact support within 48 hours of renewal and the account has not materially used the paid service after renewal.</li>
+      <li><strong>How to cancel:</strong> In the <a href="https://developer.linkshieldai.com/portal.php?page=billing">developer portal</a>, open <strong>Billing</strong> and choose <strong>Manage billing</strong>. You can also email support.</li>
+      <li><strong>You keep what you paid for:</strong> However you cancel, your paid plan stays active until the end of the billing period you have already paid for. Your account then moves to the Free plan, and you are not charged again.</li>
+      <li><strong>No refund on cancellation:</strong> Cancelling stops future charges. It does not refund the current billing period.</li>
+      <li><strong>Data and API keys:</strong> Cancelling does not delete your account, API keys, or data. Your keys keep working with Free plan limits.</li>
+      <li><strong>Resubscribing:</strong> You can subscribe again at any time from the Billing page.</li>
     </ul>
 
-    <h2>4. Chargebacks</h2>
-    <p>Please contact support before initiating a chargeback. We can usually resolve billing issues faster than a bank dispute. Accounts with active chargebacks may be suspended or permanently terminated to prevent further unauthorized or disputed usage.</p>
+    <h2>4. Plan Changes</h2>
+    <p>You can switch plans from the Billing page. Before anything is charged, the Billing page shows what the change costs now and what you will pay each month after, and you confirm it. A switch takes effect immediately, a new monthly billing period starts that day, and you get credit for the days you already paid for on your old plan.</p>
+    <ul>
+      <li><strong>Upgrades:</strong> You pay for a full month of the new plan, minus the value of the unused days on your old plan. For example, switching from Starter ($29) to Growth ($79) halfway through the month costs $79 minus $14.50, so $64.50 is charged at the time of the change.</li>
+      <li><strong>Downgrades:</strong> If the unused days on your old plan are worth more than a month of the new plan, nothing is charged and the difference is kept as credit. For example, switching from Growth ($79) to Starter ($29) halfway through the month leaves $39.50 of unused time. A month of Starter costs $29, so $10.50 is kept as credit, and your next renewal is $29 minus $10.50, so $18.50.</li>
+      <li><strong>Credit:</strong> Credit from a plan change is taken off your next renewals automatically. It is not paid out as money, cannot be moved to another subscription, and is lost if the subscription ends.</li>
+      <li><strong>If the payment fails:</strong> You stay on your current plan and nothing changes.</li>
+    </ul>
 
-    <h2>5. Summary</h2>
+    <h2>5. Failed Payments</h2>
+    <p>If a renewal payment fails, it is retried automatically, and your plan stays active for a short grace period. If the payment still does not go through, your account moves to Free plan limits until you update your payment method under <strong>Billing &rarr; Manage billing</strong>.</p>
+
+    <h2>6. General Refund Policy</h2>
+    <p>To keep billing simple, LinkShieldAI generally does not refund subscription periods that have started, with the common-sense exceptions in section 7.</p>
+    <ul>
+      <li><strong>Monthly plans:</strong> A monthly payment is non-refundable once the billing period has started.</li>
+      <li><strong>No prorated refunds:</strong> We do not refund money for unused days, unused scans, or unused plan credits.</li>
+    </ul>
+
+    <h2>7. Fairness Exceptions</h2>
+    <p>We may issue a full or partial refund, a credit, or another reasonable remedy in these situations:</p>
+    <ul>
+      <li><strong>Technical failures:</strong> A confirmed LinkShieldAI bug or outage, outside scheduled maintenance, prevented meaningful use of the service for more than 72 consecutive hours.</li>
+      <li><strong>Billing errors:</strong> You were charged incorrectly because of a clerical, payment, or system error on our part.</li>
+      <li><strong>Duplicate charges:</strong> You were charged twice for the same account, period, or plan.</li>
+      <li><strong>Accidental renewal:</strong> You contact support within 48 hours of a renewal, and the account has not materially used the paid plan since the renewal.</li>
+    </ul>
+    <p>Refunds can only be issued within <strong>30 days of the payment</strong>. Requests made after that cannot be refunded to your payment method.</p>
+
+    <h2>8. How Refunds Are Paid</h2>
+    <ul>
+      <li><strong>Fees are not refundable:</strong> Payment processing fees and currency conversion fees charged on the original payment are not returned. A refund is therefore less than the amount you paid. For example, a refund of a $9.00 payment may return about $8.05. The exact fees depend on your country, currency, and payment method.</li>
+      <li><strong>Where the money goes:</strong> Refunds go back to the payment method you paid with. They usually arrive within 3-5 business days, depending on your bank.</li>
+      <li><strong>Local currency:</strong> If you paid in a currency other than US dollars, the refund is paid in that currency at the exchange rate on the day of the refund. The amount in your currency may therefore differ from what you were charged.</li>
+      <li><strong>Access after a full refund:</strong> When a billing period is refunded in full, the subscription is also cancelled. Paid access for that period ends immediately, and your account moves to the Free plan.</li>
+    </ul>
+
+    <h2>9. Chargebacks</h2>
+    <p>Please contact support before opening a chargeback or payment dispute with your bank. We can usually resolve billing issues faster than a bank dispute. Accounts with an open chargeback may be suspended or permanently terminated to prevent further unauthorized or disputed use.</p>
+
+    <h2>10. Summary</h2>
     <table>
       <thead>
         <tr><th>Situation</th><th>Policy</th></tr>
       </thead>
       <tbody>
-        <tr><td>Monthly subscription</td><td>No refunds; cancellation takes effect at the end of the current billing cycle.</td></tr>
-        <tr><td>Unused API credits or calls</td><td>Do not roll over and are not refundable unless a plan says otherwise.</td></tr>
-        <tr><td>Annual plan</td><td>Refund may be considered within 7 days if usage stayed within free-tier limits.</td></tr>
-        <tr><td>System outage</td><td>Case-by-case refund, credit, or remedy if LinkShieldAI caused prolonged unavailability.</td></tr>
+        <tr><td>Cancelling</td><td>Plan stays active until the end of the paid period, then moves to Free. No further charges and no refund of the current period.</td></tr>
+        <tr><td>Monthly subscription</td><td>Non-refundable once the billing period has started.</td></tr>
+        <tr><td>Unused scans or days</td><td>Do not roll over and are not refunded.</td></tr>
+        <tr><td>Upgrade or downgrade</td><td>Shown and confirmed before anything is charged. Takes effect immediately. The unused days of the old plan count toward the new one; any leftover credit reduces future renewals and is not paid out as money.</td></tr>
+        <tr><td>Failed renewal</td><td>Retried automatically. If it keeps failing, the account moves to Free limits until the payment method is updated.</td></tr>
+        <tr><td>Outage, billing error, or duplicate charge</td><td>Refund, credit, or other remedy, case by case.</td></tr>
         <tr><td>Accidental renewal</td><td>Contact support within 48 hours for review.</td></tr>
+        <tr><td>Any approved refund</td><td>Within 30 days of payment, to the original payment method, minus non-refundable processing and currency conversion fees.</td></tr>
       </tbody>
     </table>
 
-    <h2>6. How to Request a Refund</h2>
-    <p>If you believe you qualify for an exception, email <a href="mailto:support@linkshieldai.com">support@linkshieldai.com</a> with your account email, billing details, relevant dates, and the reason for your request. We aim to review refund requests within 3-5 business days.</p>
+    <h2>11. How to Request a Refund</h2>
+    <p>If you believe you qualify for an exception, email <a href="mailto:support@linkshieldai.com">support@linkshieldai.com</a> within 30 days of the payment. Include your account email, the payment date and amount (or the receipt from Dodo Payments), and the reason for your request. We aim to review refund requests within 3-5 business days.</p>
 
-    <h2>7. Changes to This Policy</h2>
-    <p>We may update this policy as LinkShieldAI plans, billing systems, or services evolve. The updated date on this page will show the latest version.</p>
+    <h2>12. Changes to This Policy</h2>
+    <p>We may update this policy as LinkShieldAI plans, billing systems, or services change. The date at the top of this page shows when it was last updated.</p>
   </article>
 </main>
 
